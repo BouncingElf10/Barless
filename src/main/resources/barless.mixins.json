@@ -9,8 +9,10 @@
 		"requireAnnotations": true
 	},
 	"client": [
+		"MinecraftMixin",
+		"MinecraftRenderMixin",
 		"RemoveTitleBarMixin",
 		"RenderHookMixin",
-		"accessor.WindowHandleAccessor"
+		"accessor.WindowAccessor"
 	]
 }

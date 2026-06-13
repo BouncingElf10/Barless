@@ -1,6 +1,6 @@
 package com.bouncingelf10.barless.mixin;
 
-import com.bouncingelf10.barless.mixin.accessor.WindowHandleAccessor;
+import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
@@ -15,7 +15,7 @@ public class RemoveTitleBarMixin {
 	private void init(CallbackInfo info) {
 		Minecraft mc = (Minecraft)(Object)this;
 		Window window = mc.getWindow();
-		long handle = ((WindowHandleAccessor)(Object) window).getHandle();
+		long handle = ((WindowAccessor)(Object) window).barless$getHandle();
 
 		GLFW.glfwSetWindowAttrib(handle, GLFW.GLFW_DECORATED, GLFW.GLFW_FALSE);
 	}

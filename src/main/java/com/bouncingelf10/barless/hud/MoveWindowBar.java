@@ -1,7 +1,7 @@
 package com.bouncingelf10.barless.hud;
 
 import com.bouncingelf10.barless.BarlessClient;
-import com.bouncingelf10.barless.mixin.accessor.WindowHandleAccessor;
+import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -37,7 +37,7 @@ public class MoveWindowBar {
 
         if (window.isFullscreen()) return;
 
-        long handle = ((WindowHandleAccessor) (Object) window).getHandle();
+        long handle = ((WindowAccessor) (Object) window).barless$getHandle();
         int screenW = window.getGuiScaledWidth();
         double guiScale = window.getGuiScale();
 

@@ -1,6 +1,7 @@
 package com.bouncingelf10.barless.mixin;
 
 import com.bouncingelf10.barless.hud.MoveWindowBar;
+import com.bouncingelf10.barless.hud.ResizeBars;
 import com.bouncingelf10.barless.hud.TopButtons;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import net.minecraft.client.Minecraft;
@@ -29,6 +30,7 @@ public class RenderHookMixin {
     )
     private void onBeforePrepare(GpuBufferSlice fogBuffer, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
+        ResizeBars.tick();
 
         int mouseX = (int)(mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
         int mouseY = (int)(mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
