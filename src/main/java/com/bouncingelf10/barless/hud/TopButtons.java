@@ -3,12 +3,15 @@ package com.bouncingelf10.barless.hud;
 import com.bouncingelf10.barless.BarlessClient;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiComponent;
 
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public class TopButtons {
@@ -41,7 +44,7 @@ public class TopButtons {
     private static int prevMouseState = GLFW.GLFW_RELEASE;
     private static int hoveredButton = -1;
 
-    public static void renderAndHandle(GuiGraphics graphics) {
+    public static void renderAndHandle(PoseStack poseStack) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
         long handle = ((WindowAccessor) (Object) window).barless$getHandle();
@@ -52,9 +55,9 @@ public class TopButtons {
         updateHover(handle, screenW, guiScale);
 
         if (BarlessClient.IS_MAC) {
-            renderMac(graphics, screenW);
+            renderMac(poseStack, screenW);
         } else {
-            renderWindows(graphics, screenW);
+            renderWindows(poseStack, screenW);
         }
 
         handleMouse(handle, screenW);
@@ -115,40 +118,46 @@ public class TopButtons {
         return hoveredButton == btn;
     }
 
-    private static void renderMac(GuiGraphics graphics, int screenW) {
+    private static void renderMac(PoseStack poseStack, int screenW) {
         int closeX = BUTTON_PADDING_SIDE;
         int minimizeX = closeX + BUTTON_W + BUTTON_SPACING;
         int fullscreenX = minimizeX + BUTTON_W + BUTTON_SPACING;
 
-        blitWithSlide(graphics, BUTTON, closeX, BUTTON_PADDING_TOP, 0, lerpColor(RED_DARK, RED_LIGHT, easeInOutCubic(fade[0])));
-        blitWithSlide(graphics, BUTTON, minimizeX, BUTTON_PADDING_TOP, 2, lerpColor(YELLOW_DARK, YELLOW_LIGHT, easeInOutCubic(fade[2])));
-        blitWithSlide(graphics, BUTTON, fullscreenX, BUTTON_PADDING_TOP, 1, lerpColor(GREEN_DARK, GREEN_LIGHT, easeInOutCubic(fade[1])));
+        blitWithSlide(poseStack, BUTTON, closeX, BUTTON_PADDING_TOP, 0, lerpColor(RED_DARK, RED_LIGHT, easeInOutCubic(fade[0])));
+        blitWithSlide(poseStack, BUTTON, minimizeX, BUTTON_PADDING_TOP, 2, lerpColor(YELLOW_DARK, YELLOW_LIGHT, easeInOutCubic(fade[2])));
+        blitWithSlide(poseStack, BUTTON, fullscreenX, BUTTON_PADDING_TOP, 1, lerpColor(GREEN_DARK, GREEN_LIGHT, easeInOutCubic(fade[1])));
     }
 
-    private static void renderWindows(GuiGraphics graphics, int screenW) {
+    private static void renderWindows(PoseStack poseStack, int screenW) {
         int closeX = screenW - BUTTON_PADDING_SIDE - BUTTON_W;
         int fullscreenX = closeX - BUTTON_SPACING - BUTTON_W;
         int minimizeX = closeX - 2 * (BUTTON_SPACING + BUTTON_W);
 
-        blitWithSlide(graphics, BUTTON, closeX, BUTTON_PADDING_TOP, 0, lerpColor(RED_DARK, RED_LIGHT, easeInOutCubic(fade[0])));
-        blitWithSlide(graphics, BUTTON, fullscreenX, BUTTON_PADDING_TOP, 1, lerpColor(GREEN_DARK, GREEN_LIGHT, easeInOutCubic(fade[1])));
-        blitWithSlide(graphics, BUTTON, minimizeX, BUTTON_PADDING_TOP, 2, lerpColor(YELLOW_DARK, YELLOW_LIGHT, easeInOutCubic(fade[2])));
+        blitWithSlide(poseStack, BUTTON, closeX, BUTTON_PADDING_TOP, 0, lerpColor(RED_DARK, RED_LIGHT, easeInOutCubic(fade[0])));
+        blitWithSlide(poseStack, BUTTON, fullscreenX, BUTTON_PADDING_TOP, 1, lerpColor(GREEN_DARK, GREEN_LIGHT, easeInOutCubic(fade[1])));
+        blitWithSlide(poseStack, BUTTON, minimizeX, BUTTON_PADDING_TOP, 2, lerpColor(YELLOW_DARK, YELLOW_LIGHT, easeInOutCubic(fade[2])));
     }
 
 
-    private static void blitWithSlide(GuiGraphics graphics, ResourceLocation texture, int x, int baseY, int slideIndex, int color) {
+    private static void blitWithSlide(PoseStack poseStack, ResourceLocation texture, int x, int baseY, int slideIndex, int color) {
         float offsetY = getSlideOffset(slideIndex);
 
-        var pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(0f, offsetY, 0f);
+        poseStack.pushPose();
+        poseStack.translate(0.0D, offsetY, 0.0D);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, texture);
 
         Vector3f colorVec = getColorVec(color);
-        graphics.setColor(colorVec.x, colorVec.y, colorVec.z, 1f);
-        graphics.blit(texture, x, baseY, 0.0F, 0.0F, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H);
-        graphics.setColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderColor(colorVec.x(), colorVec.y(), colorVec.z(), 1.0F);
 
-        pose.popPose();
+        GuiComponent.blit(poseStack, x, baseY, 0, 0, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H);
+
+        RenderSystem.disableBlend();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        poseStack.popPose();
     }
 
     private static Vector3f getColorVec(int color) {

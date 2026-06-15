@@ -4,8 +4,11 @@ import com.bouncingelf10.barless.BarlessClient;
 import com.bouncingelf10.barless.WindowDragLock;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+
+import net.minecraft.client.gui.GuiComponent;
 import org.lwjgl.glfw.GLFW;
 
 public class MoveWindowBar {
@@ -32,7 +35,7 @@ public class MoveWindowBar {
 
     private static int prevMouseState = GLFW.GLFW_RELEASE;
 
-    public static void renderAndHandle(GuiGraphics graphics) {
+    public static void renderAndHandle(PoseStack poseStack) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
 
@@ -46,7 +49,7 @@ public class MoveWindowBar {
         updateHover(handle, screenW, guiScale);
         handleMouse(handle, guiScale, screenW);
 
-        render(graphics, screenW);
+        render(poseStack, screenW);
     }
 
     private static void updateSlide(long handle, double guiScale) {
@@ -133,7 +136,7 @@ public class MoveWindowBar {
         prevMouseState = state;
     }
 
-    private static void render(GuiGraphics graphics, int screenW) {
+    private static void render(PoseStack poseStack, int screenW) {
         int startX;
         int endX;
 
@@ -150,14 +153,13 @@ public class MoveWindowBar {
 
         float offsetY = getSlideOffset();
 
-        var pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(0f, offsetY, 0f);
+        poseStack.pushPose();
+        poseStack.translate(0f, offsetY, 0f);
         int y = BUTTON_PADDING_TOP + TopButtons.BUTTON_H / 2;
 
-        graphics.fill(startX, y, startX + width, y + BAR_HEIGHT, BAR_COLOR);
+        GuiComponent.fill(poseStack, startX, y, startX + width, y + BAR_HEIGHT, BAR_COLOR);
 
-        pose.popPose();
+        poseStack.popPose();
     }
 
     private static float getSlideOffset() {
