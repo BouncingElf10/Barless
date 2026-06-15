@@ -25,6 +25,6 @@ public interface WindowAccessor {
     @Accessor("height")
     void barless$setHeight(int h);
 
-    @Accessor("isResized")
-    void barless$setIsResized(boolean v);
+    @Accessor("dirty")
+    void barless$setDirty(boolean v);
 }

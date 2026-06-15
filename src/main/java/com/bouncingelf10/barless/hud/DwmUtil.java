@@ -43,6 +43,6 @@ public class DwmUtil {
 
         WinDef.DWORDByReference corner = new WinDef.DWORDByReference(new WinDef.DWORD(DWMWCP_ROUND));
         Dwmapi.INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, corner, 4);
-        Dwmapi.INSTANCE.DwmExtendFrameIntoClientArea(hwnd, new MARGINS(-1));
+        // Dwmapi.INSTANCE.DwmExtendFrameIntoClientArea(hwnd, new MARGINS(-1));
     }
 }

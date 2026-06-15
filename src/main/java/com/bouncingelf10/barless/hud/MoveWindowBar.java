@@ -5,7 +5,7 @@ import com.bouncingelf10.barless.WindowDragLock;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import org.lwjgl.glfw.GLFW;
 
 public class MoveWindowBar {
@@ -32,7 +32,7 @@ public class MoveWindowBar {
 
     private static int prevMouseState = GLFW.GLFW_RELEASE;
 
-    public static void renderAndHandle(GuiGraphicsExtractor graphics) {
+    public static void renderAndHandle(GuiGraphics graphics) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
 
@@ -133,7 +133,7 @@ public class MoveWindowBar {
         prevMouseState = state;
     }
 
-    private static void render(GuiGraphicsExtractor graphics, int screenW) {
+    private static void render(GuiGraphics graphics, int screenW) {
         int startX;
         int endX;
 

@@ -1,7 +1,7 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
 	id 'maven-publish'
-	id("com.bouncingelf10.minecraft-version-compatibility-checker") version "1.7.0"
+	id "com.bouncingelf10.minecraft-version-compatibility-checker" version "1.7.0"
 	id "me.modmuss50.mod-publish-plugin" version "2.0.0"
 }
 
@@ -23,19 +23,20 @@ repositories {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	mappings loom.officialMojangMappings()
+
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	implementation "maven.modrinth:timelesslib:${project.timelesslib_version}"
+	modImplementation "maven.modrinth:timelesslib:${project.timelesslib_version}"
 
 	implementation(include("net.java.dev.jna:jna:5.14.0"))
 	implementation(include("net.java.dev.jna:jna-platform:5.14.0"))
 }
 
 publishMods {
-	file = jar.archiveFile
+	file = remapJar.archiveFile
 	changelog = "Initial 1.21.11 release"
 	type = STABLE
 	modLoaders.add("fabric")

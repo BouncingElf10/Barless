@@ -112,9 +112,9 @@ public class ResizeBars {
         acc.barless$setHeight(pendingH);
         acc.barless$setFramebufferWidth(fbW[0]);
         acc.barless$setFramebufferHeight(fbH[0]);
-        acc.barless$setIsResized(true);
+        acc.barless$setDirty(true);
 
-        mc.resizeGui();
+        mc.resizeDisplay();
     }
 
     private static void calculateResize(long handle, int winW, int winH, double mx, double my) {

@@ -5,7 +5,7 @@ import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -40,7 +40,7 @@ public class TopButtons {
     private static int prevMouseState = GLFW.GLFW_RELEASE;
     private static int hoveredButton = -1;
 
-    public static void renderAndHandle(GuiGraphicsExtractor graphics) {
+    public static void renderAndHandle(GuiGraphics graphics) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
         long handle = ((WindowAccessor) (Object) window).barless$getHandle();
@@ -114,7 +114,7 @@ public class TopButtons {
         return hoveredButton == btn;
     }
 
-    private static void renderMac(GuiGraphicsExtractor graphics, int screenW) {
+    private static void renderMac(GuiGraphics graphics, int screenW) {
         int closeX = BUTTON_PADDING_SIDE;
         int minimizeX = closeX + BUTTON_W + BUTTON_SPACING;
         int fullscreenX = minimizeX + BUTTON_W + BUTTON_SPACING;
@@ -124,7 +124,7 @@ public class TopButtons {
         blitWithSlide(graphics, BUTTON, fullscreenX, BUTTON_PADDING_TOP, 1, lerpColor(GREEN_DARK, GREEN_LIGHT, easeInOutCubic(fade[1])));
     }
 
-    private static void renderWindows(GuiGraphicsExtractor graphics, int screenW) {
+    private static void renderWindows(GuiGraphics graphics, int screenW) {
         int closeX = screenW - BUTTON_PADDING_SIDE - BUTTON_W;
         int fullscreenX = closeX - BUTTON_SPACING - BUTTON_W;
         int minimizeX = closeX - 2 * (BUTTON_SPACING + BUTTON_W);
@@ -135,7 +135,7 @@ public class TopButtons {
     }
 
 
-    private static void blitWithSlide(GuiGraphicsExtractor graphics, Identifier texture, int x, int baseY, int slideIndex, int color) {
+    private static void blitWithSlide(GuiGraphics graphics, Identifier texture, int x, int baseY, int slideIndex, int color) {
         float offsetY = getSlideOffset(slideIndex);
 
         var pose = graphics.pose();
