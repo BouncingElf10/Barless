@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.Window;
 import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector3f;
@@ -140,12 +141,12 @@ public class TopButtons {
         float offsetY = getSlideOffset(slideIndex);
 
         var pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(0f, offsetY, 0f);
+        pose.pushMatrix();
+        pose.translate(0f, offsetY);
 
-        graphics.blit(RenderType::guiTextured, texture, x, baseY, 0.0F, 0.0F, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H, color);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, baseY, 0.0F, 0.0F, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H, color);
 
-        pose.popPose();
+        pose.popMatrix();
     }
 
     private static Vector3f getColorVec(int color) {
