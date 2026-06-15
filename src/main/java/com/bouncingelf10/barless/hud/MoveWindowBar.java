@@ -151,13 +151,13 @@ public class MoveWindowBar {
         float offsetY = getSlideOffset();
 
         var pose = graphics.pose();
-        pose.pushMatrix();
-        pose.translate(0f, offsetY);
+        pose.pushPose();
+        pose.translate(0f, offsetY, 0f);
         int y = BUTTON_PADDING_TOP + TopButtons.BUTTON_H / 2;
 
         graphics.fill(startX, y, startX + width, y + BAR_HEIGHT, BAR_COLOR);
 
-        pose.popMatrix();
+        pose.popPose();
     }
 
     private static float getSlideOffset() {

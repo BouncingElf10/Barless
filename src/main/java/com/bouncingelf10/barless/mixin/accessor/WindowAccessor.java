@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Window.class)
 public interface WindowAccessor {
-    @Accessor("handle")
+    @Accessor("window")
     long barless$getHandle();
 
     @Invoker("setWindowed")

@@ -6,8 +6,8 @@ import com.mojang.blaze3d.platform.Window;
 import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public class TopButtons {
@@ -139,12 +139,23 @@ public class TopButtons {
         float offsetY = getSlideOffset(slideIndex);
 
         var pose = graphics.pose();
-        pose.pushMatrix();
-        pose.translate(0f, offsetY);
+        pose.pushPose();
+        pose.translate(0f, offsetY, 0f);
 
-        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, baseY, 0, 0, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H, color);
+        Vector3f colorVec = getColorVec(color);
+        graphics.setColor(colorVec.x, colorVec.y, colorVec.z, 1.0f);
+        graphics.blit(texture, x, baseY, 0, 0, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H);
+        graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        pose.popMatrix();
+        pose.popPose();
+    }
+
+    private static Vector3f getColorVec(int color) {
+        float a = ((color >> 24) & 0xFF) / 255.0F;
+        float r = ((color >> 16) & 0xFF) / 255.0F;
+        float g = ((color >> 8) & 0xFF) / 255.0F;
+        float b = (color & 0xFF) / 255.0F;
+        return new Vector3f(r, g, b);
     }
 
     private static float getSlideOffset(int btn) {
