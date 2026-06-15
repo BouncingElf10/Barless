@@ -36,7 +36,7 @@ dependencies {
 
 publishMods {
 	file = remapJar.archiveFile
-	changelog = "Initial 1.21.6-1.21.8 release"
+	changelog = "Initial 1.20-1.20.4 release"
 	type = STABLE
 	modLoaders.add("fabric")
 
