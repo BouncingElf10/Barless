@@ -1,5 +1,6 @@
 package com.bouncingelf10.barless.hud;
 
+import com.bouncingelf10.barless.WindowDragLock;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -81,6 +82,7 @@ public class ResizeBars {
 
     private static void updateCursor(long handle) {
         if (resizing) return;
+        if (WindowDragLock.isHeldBy(WindowDragLock.Owner.MOVE)) return;
 
         switch (hovered) {
             case LEFT, RIGHT -> GLFW.glfwSetCursor(handle, cursorH);
@@ -123,17 +125,19 @@ public class ResizeBars {
             double screenMY = wy[0] + my;
 
             if (!resizing && hovered != Zone.NONE) {
-                resizing = true;
-                resizeZone = hovered;
-                startMouseX = screenMX;
-                startMouseY = screenMY;
-                startWinX = wx[0];
-                startWinY = wy[0];
-                startWinW = winW;
-                startWinH = winH;
+                if (WindowDragLock.tryAcquire(WindowDragLock.Owner.RESIZE)) {
+                    resizing = true;
+                    resizeZone = hovered;
+                    startMouseX = screenMX;
+                    startMouseY = screenMY;
+                    startWinX = wx[0];
+                    startWinY = wy[0];
+                    startWinW = winW;
+                    startWinH = winH;
+                }
             }
 
-            if (resizing) {
+            if (resizing && WindowDragLock.isHeldBy(WindowDragLock.Owner.RESIZE)) {
                 double dx = screenMX - startMouseX;
                 double dy = screenMY - startMouseY;
 
@@ -192,6 +196,9 @@ public class ResizeBars {
                 startWinH = newH;
             }
         } else {
+            if (resizing) {
+                WindowDragLock.release(WindowDragLock.Owner.RESIZE);
+            }
             resizing = false;
         }
     }

@@ -1,6 +1,7 @@
 package com.bouncingelf10.barless.hud;
 
 import com.bouncingelf10.barless.BarlessClient;
+import com.bouncingelf10.barless.WindowDragLock;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -102,8 +103,8 @@ public class MoveWindowBar {
         double mx = cx[0];
         double my = cy[0];
 
-        int winX[] = new int[1];
-        int winY[] = new int[1];
+        int[] winX = new int[1];
+        int[] winY = new int[1];
         GLFW.glfwGetWindowPos(handle, winX, winY);
 
         int guiY = (int) (my / guiScale);
@@ -113,14 +114,19 @@ public class MoveWindowBar {
 
         if (state == GLFW.GLFW_PRESS) {
             if (!dragging && hovered && guiY >= barTop && guiY <= barBottom) {
-                dragging = true;
-                dragStartMouseX = mx;
-                dragStartMouseY = my;
+                if (WindowDragLock.tryAcquire(WindowDragLock.Owner.MOVE)) {
+                    dragging = true;
+                    dragStartMouseX = mx;
+                    dragStartMouseY = my;
+                }
             }
-            if (dragging) {
+            if (dragging && WindowDragLock.isHeldBy(WindowDragLock.Owner.MOVE)) {
                 GLFW.glfwSetWindowPos(handle, (int) (winX[0] + (mx - dragStartMouseX)), (int) (winY[0] + (my - dragStartMouseY)));
             }
         } else {
+            if (dragging) {
+                WindowDragLock.release(WindowDragLock.Owner.MOVE);
+            }
             dragging = false;
         }
 
@@ -133,11 +139,9 @@ public class MoveWindowBar {
 
         if (BarlessClient.IS_MAC) {
             startX = BUTTON_PADDING_SIDE + TopButtons.BUTTON_W * 3 + TopButtons.BUTTON_SPACING * 2 + GAP_FROM_BUTTONS;
-
             endX = screenW - EDGE_PADDING;
         } else {
             startX = EDGE_PADDING;
-
             endX = screenW - BUTTON_PADDING_SIDE - TopButtons.BUTTON_W * 3 - TopButtons.BUTTON_SPACING * 2 - GAP_FROM_BUTTONS;
         }
 

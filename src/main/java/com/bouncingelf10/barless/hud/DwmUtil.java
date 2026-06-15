@@ -1,6 +1,7 @@
 package com.bouncingelf10.barless.hud;
 
 import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.StdCallLibrary;
@@ -38,7 +39,7 @@ public class DwmUtil {
         if (!os.contains("win")) return;
 
         long hwndLong = GLFWNativeWin32.glfwGetWin32Window(glfwHandle);
-        WinDef.HWND hwnd = new WinDef.HWND(new com.sun.jna.Pointer(hwndLong));
+        WinDef.HWND hwnd = new WinDef.HWND(new Pointer(hwndLong));
 
         WinDef.DWORDByReference corner = new WinDef.DWORDByReference(new WinDef.DWORD(DWMWCP_ROUND));
         Dwmapi.INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, corner, 4);
