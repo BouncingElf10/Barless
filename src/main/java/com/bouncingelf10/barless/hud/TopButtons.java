@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.Window;
 import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -142,10 +143,7 @@ public class TopButtons {
         pose.pushPose();
         pose.translate(0f, offsetY, 0f);
 
-        Vector3f colorVec = getColorVec(color);
-        graphics.setColor(colorVec.x, colorVec.y, colorVec.z, 1.0f);
-        graphics.blit(texture, x, baseY, 0, 0, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H);
-        graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        graphics.blit(RenderType::guiTextured, texture, x, baseY, 0.0F, 0.0F, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H, color);
 
         pose.popPose();
     }
