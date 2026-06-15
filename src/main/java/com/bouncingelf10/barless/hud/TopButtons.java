@@ -7,11 +7,11 @@ import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
 public class TopButtons {
-    private static final Identifier BUTTON = Identifier.fromNamespaceAndPath(BarlessClient.MOD_ID, "textures/gui/button.png");
+    private static final ResourceLocation BUTTON = ResourceLocation.fromNamespaceAndPath(BarlessClient.MOD_ID, "textures/gui/button.png");
     static final int BUTTON_W = 8;
     static final int BUTTON_H = 8;
     private static final int TEXTURE_W = 8;
@@ -135,7 +135,7 @@ public class TopButtons {
     }
 
 
-    private static void blitWithSlide(GuiGraphics graphics, Identifier texture, int x, int baseY, int slideIndex, int color) {
+    private static void blitWithSlide(GuiGraphics graphics, ResourceLocation texture, int x, int baseY, int slideIndex, int color) {
         float offsetY = getSlideOffset(slideIndex);
 
         var pose = graphics.pose();

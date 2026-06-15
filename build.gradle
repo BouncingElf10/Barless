@@ -57,6 +57,11 @@ publishMods {
 	}
 }
 
+minecraftCompat {
+	checkNewerVersions = false;
+	checkOlderVersions = true;
+}
+
 processResources {
 	def version = project.version
 	inputs.property "version", version
