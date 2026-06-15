@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
     @Inject(method = "tick", at = @At("HEAD"))
-    private void onRenderHead(CallbackInfo ci) {
+    private void barless$onRenderHead(CallbackInfo ci) {
         ResizeBars.applyPendingResize();
     }
 }

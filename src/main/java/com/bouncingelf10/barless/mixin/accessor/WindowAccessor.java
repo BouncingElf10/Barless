@@ -13,10 +13,18 @@ public interface WindowAccessor {
     @Invoker("setWindowed")
     void barless$setWindowed(int width, int height);
 
+    @Accessor("framebufferWidth")
+    void barless$setFramebufferWidth(int w);
 
-    @Accessor("framebufferWidth")  void barless$setFramebufferWidth(int w);
-    @Accessor("framebufferHeight") void barless$setFramebufferHeight(int h);
-    @Accessor("width")             void barless$setWidth(int w);
-    @Accessor("height")            void barless$setHeight(int h);
-    @Accessor("isResized")         void barless$setIsResized(boolean v);
+    @Accessor("framebufferHeight")
+    void barless$setFramebufferHeight(int h);
+
+    @Accessor("width")
+    void barless$setWidth(int w);
+
+    @Accessor("height")
+    void barless$setHeight(int h);
+
+    @Accessor("isResized")
+    void barless$setIsResized(boolean v);
 }

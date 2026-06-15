@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public class RemoveTitleBarMixin {
 	@Inject(at = @At("HEAD"), method = "run")
-	private void init(CallbackInfo info) {
+	private void barless$init(CallbackInfo info) {
 		Minecraft mc = (Minecraft)(Object)this;
 		Window window = mc.getWindow();
 		long handle = ((WindowAccessor)(Object) window).barless$getHandle();

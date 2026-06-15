@@ -3,13 +3,13 @@
 	"id": "barless",
 	"version": "${version}",
 	"name": "Barless",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A mod that removes the ugly top bar from your minecraft window",
 	"authors": [
 		"BouncingElf10"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/project/barless",
+		"sources": "https://github.com/BouncingElf10/Barless"
 	},
 	"license": "GPL-3.0",
 	"icon": "assets/barless/icon.png",

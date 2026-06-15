@@ -28,7 +28,7 @@ public class RenderHookMixin {
                     target = "Lnet/minecraft/client/gui/render/GuiRenderer;prepare()V"
             )
     )
-    private void onBeforePrepare(GpuBufferSlice fogBuffer, CallbackInfo ci) {
+    private void barless$onBeforePrepare(GpuBufferSlice fogBuffer, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
         ResizeBars.tick();
 
