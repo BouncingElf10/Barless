@@ -6,14 +6,13 @@ import com.mojang.blaze3d.platform.Window;
 import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
+
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public class TopButtons {
-    private static final ResourceLocation BUTTON = ResourceLocation.fromNamespaceAndPath(BarlessClient.MOD_ID, "textures/gui/button.png");
+    private static final ResourceLocation BUTTON = new ResourceLocation(BarlessClient.MOD_ID, "textures/gui/button.png");
     static final int BUTTON_W = 8;
     static final int BUTTON_H = 8;
     private static final int TEXTURE_W = 8;
@@ -141,12 +140,15 @@ public class TopButtons {
         float offsetY = getSlideOffset(slideIndex);
 
         var pose = graphics.pose();
-        pose.pushMatrix();
-        pose.translate(0f, offsetY);
+        pose.pushPose();
+        pose.translate(0f, offsetY, 0f);
 
-        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, baseY, 0.0F, 0.0F, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H, color);
+        Vector3f colorVec = getColorVec(color);
+        graphics.setColor(colorVec.x, colorVec.y, colorVec.z, 1f);
+        graphics.blit(texture, x, baseY, 0.0F, 0.0F, BUTTON_W, BUTTON_H, TEXTURE_W, TEXTURE_H);
+        graphics.setColor(1f, 1f, 1f, 1f);
 
-        pose.popMatrix();
+        pose.popPose();
     }
 
     private static Vector3f getColorVec(int color) {

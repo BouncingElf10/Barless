@@ -43,9 +43,11 @@ publishMods {
 	curseforge {
 		projectId = "1576204"
 		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-		minecraftVersions.add("1.21.6")
-		minecraftVersions.add("1.21.7")
-		minecraftVersions.add("1.21.8")
+		minecraftVersions.add("1.20")
+		minecraftVersions.add("1.20.1")
+		minecraftVersions.add("1.20.2")
+		minecraftVersions.add("1.20.3")
+		minecraftVersions.add("1.20.4")
 		client = true
 		server = true
 		requires("timelesslib")
@@ -53,9 +55,11 @@ publishMods {
 	modrinth {
 		projectId = "bXiW90yr"
 		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-		minecraftVersions.add("1.21.6")
-		minecraftVersions.add("1.21.7")
-		minecraftVersions.add("1.21.8")
+		minecraftVersions.add("1.20")
+		minecraftVersions.add("1.20.1")
+		minecraftVersions.add("1.20.2")
+		minecraftVersions.add("1.20.3")
+		minecraftVersions.add("1.20.4")
 		requires("timelesslib")
 	}
 }
@@ -70,7 +74,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
+	it.options.release = 17
 }
 
 java {
@@ -79,8 +83,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {
