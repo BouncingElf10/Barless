@@ -3,6 +3,7 @@ package com.bouncingelf10.barless.hud;
 import com.bouncingelf10.barless.BarlessClient;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
+import dev.bouncingelf10.timelesslib.api.animation.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -175,6 +176,6 @@ public class TopButtons {
     }
 
     static float easeInOutCubic(float t) {
-        return t < 0.5f ? 4f * t * t * t : 1f - (float) Math.pow(-2f * t + 2f, 3) / 2f;
+        return (float) Easing.EASE_IN_OUT_CUBIC.apply(t);
     }
 }

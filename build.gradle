@@ -1,6 +1,8 @@
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
+	id("com.bouncingelf10.minecraft-version-compatibility-checker") version "1.7.0"
+	id "me.modmuss50.mod-publish-plugin" version "2.0.0"
 }
 
 version = project.mod_version
@@ -12,6 +14,10 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+	}
 }
 
 dependencies {
@@ -22,7 +28,33 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	implementation 'net.java.dev.jna:jna-platform:5.14.0'
+	implementation "maven.modrinth:timelesslib:${project.timelesslib_version}"
+
+	implementation(include("net.java.dev.jna:jna:5.14.0"))
+	implementation(include("net.java.dev.jna:jna-platform:5.14.0"))
+}
+
+publishMods {
+	file = jar.archiveFile
+	changelog = "Initial 26.1.2 release"
+	type = STABLE
+	modLoaders.add("fabric")
+
+	curseforge {
+		projectId = "123456"
+		projectSlug = "example-project"
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		minecraftVersions.add("26.1.2")
+		client = true
+		server = true
+		requires("timelesslib")
+	}
+	modrinth {
+		projectId = "abcdef"
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		minecraftVersions.add("26.1.2")
+		requires("timelesslib")
+	}
 }
 
 processResources {
