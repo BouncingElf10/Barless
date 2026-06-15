@@ -1,5 +1,6 @@
 package com.bouncingelf10.barless.mixin;
 
+import com.bouncingelf10.barless.hud.DwmUtil;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -18,5 +19,6 @@ public class RemoveTitleBarMixin {
 		long handle = ((WindowAccessor)(Object) window).barless$getHandle();
 
 		GLFW.glfwSetWindowAttrib(handle, GLFW.GLFW_DECORATED, GLFW.GLFW_FALSE);
+		DwmUtil.applyRoundedCornersAndShadow(handle);
 	}
 }

@@ -43,6 +43,9 @@ public class ResizeBars {
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
+
+        if (window.isFullscreen()) return;
+
         long handle = ((WindowAccessor) (Object) window).barless$getHandle();
 
         int winW = window.getScreenWidth();
