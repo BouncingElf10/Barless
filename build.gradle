@@ -1,7 +1,6 @@
 plugins {
 	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
 	id 'maven-publish'
-	id "com.bouncingelf10.minecraft-version-compatibility-checker" version "1.7.0"
 	id "me.modmuss50.mod-publish-plugin" version "2.0.0"
 }
 
@@ -37,14 +36,15 @@ dependencies {
 
 publishMods {
 	file = remapJar.archiveFile
-	changelog = "Initial 1.21.11 release"
+	changelog = "Initial 1.21.9-1.21.10 release"
 	type = STABLE
 	modLoaders.add("fabric")
 
 	curseforge {
 		projectId = "1576204"
 		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-		minecraftVersions.add("1.21.11")
+		minecraftVersions.add("1.21.10")
+		minecraftVersions.add("1.21.9")
 		client = true
 		server = true
 		requires("timelesslib")
@@ -52,14 +52,10 @@ publishMods {
 	modrinth {
 		projectId = "bXiW90yr"
 		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-		minecraftVersions.add("1.21.11")
+		minecraftVersions.add("1.21.10")
+		minecraftVersions.add("1.21.9")
 		requires("timelesslib")
 	}
-}
-
-minecraftCompat {
-	checkNewerVersions = false;
-	checkOlderVersions = true;
 }
 
 processResources {
