@@ -36,7 +36,7 @@ dependencies {
 
 publishMods {
 	file = jar.archiveFile
-	changelog = "Initial 26.1-26.1.2 release"
+	changelog = "Fixed issue where fullscreen would have rounded corners."
 	type = STABLE
 	modLoaders.add("fabric")
 
