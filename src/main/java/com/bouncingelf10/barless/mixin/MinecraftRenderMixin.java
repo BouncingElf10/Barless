@@ -1,6 +1,7 @@
 package com.bouncingelf10.barless.mixin;
 
 import com.bouncingelf10.barless.hud.ResizeBars;
+import com.bouncingelf10.barless.hud.WindowCorners;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftRenderMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void barless$onRenderHead(CallbackInfo ci) {
+        WindowCorners.tick();
         ResizeBars.tick();
     }
 }
