@@ -36,7 +36,7 @@ dependencies {
 
 publishMods {
 	file = remapJar.archiveFile
-	changelog = "Initial 1.21-1.21.1 release"
+	changelog = "Fixed issue where fullscreen would have rounded corners."
 	type = STABLE
 	modLoaders.add("fabric")
 
