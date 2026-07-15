@@ -32,17 +32,26 @@ public class DwmUtil {
     }
 
     private static final int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+    private static final int DWMWCP_DONOTROUND = 1;
     private static final int DWMWCP_ROUND = 2;
 
+    private static boolean isWindows() {
+        return System.getProperty("os.name", "").toLowerCase().contains("win");
+    }
+
     public static void applyRoundedCornersAndShadow(long glfwHandle) {
-        String os = System.getProperty("os.name", "").toLowerCase();
-        if (!os.contains("win")) return;
+        setRoundedCornersAndShadow(glfwHandle, true);
+    }
+
+    public static void setRoundedCornersAndShadow(long glfwHandle, boolean enabled) {
+        if (!isWindows()) return;
 
         long hwndLong = GLFWNativeWin32.glfwGetWin32Window(glfwHandle);
         WinDef.HWND hwnd = new WinDef.HWND(new Pointer(hwndLong));
 
-        WinDef.DWORDByReference corner = new WinDef.DWORDByReference(new WinDef.DWORD(DWMWCP_ROUND));
+        int preference = enabled ? DWMWCP_ROUND : DWMWCP_DONOTROUND;
+        WinDef.DWORDByReference corner = new WinDef.DWORDByReference(new WinDef.DWORD(preference));
         Dwmapi.INSTANCE.DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, corner, 4);
-        // Dwmapi.INSTANCE.DwmExtendFrameIntoClientArea(hwnd, new MARGINS(-1));
+        // Dwmapi.INSTANCE.DwmExtendFrameIntoClientArea(hwnd, new MARGINS(enabled ? -1 : 0));
     }
 }
