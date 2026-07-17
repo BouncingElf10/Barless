@@ -37,7 +37,7 @@ dependencies {
 
 publishMods {
 	file = remapJar.archiveFile
-	changelog = "Fixed issue where fullscreen would have rounded corners."
+	changelog = "Fixed issue where buttons would show when not in a menu."
 	type = STABLE
 	modLoaders.add("fabric")
 
