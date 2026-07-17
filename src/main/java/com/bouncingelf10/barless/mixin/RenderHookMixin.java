@@ -33,6 +33,10 @@ public class RenderHookMixin {
             )
     )
     private void barless$beforeGuiFlush(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+        Minecraft mc = Minecraft.getInstance();
+        boolean shouldRender = mc.player == null || mc.screen != null;
+        if (!shouldRender) return;
+
         guiGraphics.nextStratum();
         TopButtons.renderAndHandle(guiGraphics);
         MoveWindowBar.renderAndHandle(guiGraphics);
