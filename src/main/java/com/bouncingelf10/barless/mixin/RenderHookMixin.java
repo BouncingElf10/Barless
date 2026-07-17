@@ -32,6 +32,9 @@ public class RenderHookMixin {
         Minecraft mc = Minecraft.getInstance();
         ResizeBars.tick();
 
+        boolean shouldRender = mc.player == null || mc.screen != null;
+        if (!shouldRender) return;
+
         int mouseX = (int)(mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
         int mouseY = (int)(mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
 
