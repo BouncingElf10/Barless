@@ -40,14 +40,18 @@ public class ResizeBars {
     private static boolean hasPending = false;
     private static int pendingX, pendingY, pendingW, pendingH;
     private static Zone resizeZone = Zone.NONE;
+    private static int prevMouseState = GLFW.GLFW_RELEASE;
 
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
 
-        if (window.isFullscreen()) return;
-
         long handle = ((WindowAccessor) (Object) window).barless$getHandle();
+
+        if (window.isFullscreen() || mc.mouseHandler.isMouseGrabbed()) {
+            cancelResize(handle);
+            return;
+        }
 
         int winW = window.getScreenWidth();
         int winH = window.getScreenHeight();
@@ -59,6 +63,17 @@ public class ResizeBars {
         updateHover(handle, winW, winH, mx[0], my[0]);
         updateCursor(handle);
         calculateResize(handle, winW, winH, mx[0], my[0]);
+    }
+
+    private static void cancelResize(long handle) {
+        if (resizing) {
+            WindowDragLock.release(WindowDragLock.Owner.RESIZE);
+        }
+        resizing = false;
+        resizeZone = Zone.NONE;
+        hovered = Zone.NONE;
+        hasPending = false;
+        prevMouseState = GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT);
     }
 
     private static void updateHover(long handle, int w, int h, double mx, double my) {
@@ -118,13 +133,15 @@ public class ResizeBars {
     }
 
     private static void calculateResize(long handle, int winW, int winH, double mx, double my) {
-        if (GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS) {
+        int state = GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT);
+
+        if (state == GLFW.GLFW_PRESS) {
             int[] wx = new int[1], wy = new int[1];
             GLFW.glfwGetWindowPos(handle, wx, wy);
             double screenMX = wx[0] + mx;
             double screenMY = wy[0] + my;
 
-            if (!resizing && hovered != Zone.NONE) {
+            if (!resizing && hovered != Zone.NONE && prevMouseState == GLFW.GLFW_RELEASE) {
                 if (WindowDragLock.tryAcquire(WindowDragLock.Owner.RESIZE)) {
                     resizing = true;
                     resizeZone = hovered;
@@ -201,5 +218,7 @@ public class ResizeBars {
             }
             resizing = false;
         }
+
+        prevMouseState = state;
     }
 }
