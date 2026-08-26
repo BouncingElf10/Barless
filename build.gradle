@@ -37,7 +37,7 @@ dependencies {
 
 publishMods {
 	file = remapJar.archiveFile
-	changelog = "Fixed issue where buttons would show when not in a menu."
+	changelog = "Fixed issue where you could still resize while playing in game."
 	type = STABLE
 	modLoaders.add("fabric")
 
