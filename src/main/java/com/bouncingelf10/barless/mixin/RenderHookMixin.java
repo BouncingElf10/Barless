@@ -3,7 +3,6 @@ package com.bouncingelf10.barless.mixin;
 import com.bouncingelf10.barless.hud.MoveWindowBar;
 import com.bouncingelf10.barless.hud.ResizeBars;
 import com.bouncingelf10.barless.hud.TopButtons;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.GuiRenderer;

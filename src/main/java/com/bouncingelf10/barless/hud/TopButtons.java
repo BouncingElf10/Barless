@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLVideo;
 
 public class TopButtons {
     private static final Identifier BUTTON = Identifier.fromNamespaceAndPath(BarlessClient.MOD_ID, "textures/gui/button.png");
@@ -37,18 +37,17 @@ public class TopButtons {
     private static final int SLIDE_TRIGGER_Y = BUTTON_PADDING_TOP + BUTTON_H + 4;
     private static final int SLIDE_DISTANCE = BUTTON_PADDING_TOP + BUTTON_H;
 
-    private static int prevMouseState = GLFW.GLFW_RELEASE;
+    private static boolean prevMouseDown = false;
     private static int hoveredButton = -1;
 
     public static void renderAndHandle(GuiGraphicsExtractor graphics) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
-        long handle = ((WindowAccessor) (Object) window).barless$getHandle();
         int screenW = window.getGuiScaledWidth();
         double guiScale = window.getGuiScale();
 
-        updateSlideAndFade(handle, guiScale);
-        updateHover(handle, screenW, guiScale);
+        updateSlideAndFade(guiScale);
+        updateHover(screenW, guiScale);
 
         if (BarlessClient.IS_MAC) {
             renderMac(graphics, screenW);
@@ -56,13 +55,12 @@ public class TopButtons {
             renderWindows(graphics, screenW);
         }
 
-        handleMouse(handle, screenW);
+        handleMouse(window);
     }
 
-    private static void updateSlideAndFade(long handle, double guiScale) {
-        double[] cx = new double[1], cy = new double[1];
-        GLFW.glfwGetCursorPos(handle, cx, cy);
-        int guiY = (int) (cy[0] / guiScale);
+    private static void updateSlideAndFade(double guiScale) {
+        double[] c = Sdl.cursorPos();
+        int guiY = (int) (c[1] / guiScale);
 
         boolean nearTop = guiY <= SLIDE_TRIGGER_Y;
 
@@ -77,11 +75,10 @@ public class TopButtons {
         }
     }
 
-    private static void updateHover(long handle, int screenW, double guiScale) {
-        double[] cx = new double[1], cy = new double[1];
-        GLFW.glfwGetCursorPos(handle, cx, cy);
-        int guiX = (int) (cx[0] / guiScale);
-        int guiY = (int) (cy[0] / guiScale);
+    private static void updateHover(int screenW, double guiScale) {
+        double[] c = Sdl.cursorPos();
+        int guiX = (int) (c[0] / guiScale);
+        int guiY = (int) (c[1] / guiScale);
 
         hoveredButton = -1;
 
@@ -152,18 +149,19 @@ public class TopButtons {
         return -(1f - eased) * SLIDE_DISTANCE;
     }
 
-    public static void handleMouse(long handle, int screenW) {
-        int state = GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT);
+    public static void handleMouse(Window window) {
+        WindowAccessor acc = (WindowAccessor) (Object) window;
+        boolean down = Sdl.leftMouseDown();
 
-        if (state == GLFW.GLFW_PRESS && prevMouseState == GLFW.GLFW_RELEASE) {
+        if (down && !prevMouseDown) {
             switch (hoveredButton) {
-                case 0 -> GLFW.glfwSetWindowShouldClose(handle, true);
-                case 1 -> Minecraft.getInstance().getWindow().toggleFullScreen();
-                case 2 -> GLFW.glfwIconifyWindow(handle);
+                case 0 -> acc.barless$requestClose();
+                case 1 -> window.setFullscreen(!acc.barless$isFullscreen());
+                case 2 -> SDLVideo.SDL_MinimizeWindow(acc.barless$getHandle());
             }
         }
 
-        prevMouseState = state;
+        prevMouseDown = down;
     }
 
     private static int lerpColor(int dark, int light, float t) {

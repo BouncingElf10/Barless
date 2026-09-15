@@ -6,7 +6,8 @@ import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
-import org.lwjgl.glfw.GLFWNativeWin32;
+import org.lwjgl.sdl.SDLProperties;
+import org.lwjgl.sdl.SDLVideo;
 
 public class DwmUtil {
     public interface Dwmapi extends StdCallLibrary {
@@ -39,14 +40,17 @@ public class DwmUtil {
         return System.getProperty("os.name", "").toLowerCase().contains("win");
     }
 
-    public static void applyRoundedCornersAndShadow(long glfwHandle) {
-        setRoundedCornersAndShadow(glfwHandle, true);
+    public static void applyRoundedCornersAndShadow(long sdlWindow) {
+        setRoundedCornersAndShadow(sdlWindow, true);
     }
 
-    public static void setRoundedCornersAndShadow(long glfwHandle, boolean enabled) {
+    public static void setRoundedCornersAndShadow(long sdlWindow, boolean enabled) {
         if (!isWindows()) return;
 
-        long hwndLong = GLFWNativeWin32.glfwGetWin32Window(glfwHandle);
+        int props = SDLVideo.SDL_GetWindowProperties(sdlWindow);
+        long hwndLong = SDLProperties.SDL_GetPointerProperty(props, SDLVideo.SDL_PROP_WINDOW_WIN32_HWND_POINTER, 0L);
+        if (hwndLong == 0L) return;
+
         WinDef.HWND hwnd = new WinDef.HWND(new Pointer(hwndLong));
 
         int preference = enabled ? DWMWCP_ROUND : DWMWCP_DONOTROUND;

@@ -11,12 +11,12 @@ public class WindowCorners {
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
+        WindowAccessor acc = (WindowAccessor) (Object) window;
 
-        boolean rounded = !window.isFullscreen();
+        boolean rounded = !acc.barless$isFullscreen();
         if (lastRounded != null && lastRounded == rounded) return;
         lastRounded = rounded;
 
-        long handle = ((WindowAccessor) (Object) window).barless$getHandle();
-        DwmUtil.setRoundedCornersAndShadow(handle, rounded);
+        DwmUtil.setRoundedCornersAndShadow(acc.barless$getHandle(), rounded);
     }
 }

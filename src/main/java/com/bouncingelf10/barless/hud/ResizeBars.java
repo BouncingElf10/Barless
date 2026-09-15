@@ -3,8 +3,11 @@ package com.bouncingelf10.barless.hud;
 import com.bouncingelf10.barless.WindowDragLock;
 import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLMouse;
+import org.lwjgl.sdl.SDLVideo;
 
 public class ResizeBars {
 
@@ -12,19 +15,10 @@ public class ResizeBars {
     private static final int CORNER = 10;
     private static final int BAR_COLOR = 0x55FFFFFF;
 
-    private static final long cursorArrow;
-    private static final long cursorH;
-    private static final long cursorV;
-    private static final long cursorNWSE;
-    private static final long cursorNESW;
-
-    static {
-        cursorArrow = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
-        cursorH = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
-        cursorV = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
-        cursorNWSE = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR);
-        cursorNESW = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NESW_CURSOR);
-    }
+    private static final CursorType CURSOR_NWSE =
+            CursorType.createStandardCursor(SDLMouse.SDL_SYSTEM_CURSOR_NWSE_RESIZE, "barless_resize_nwse", CursorTypes.ARROW);
+    private static final CursorType CURSOR_NESW =
+            CursorType.createStandardCursor(SDLMouse.SDL_SYSTEM_CURSOR_NESW_RESIZE, "barless_resize_nesw", CursorTypes.ARROW);
 
     private enum Zone {
         NONE, LEFT, RIGHT, TOP, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
@@ -40,32 +34,31 @@ public class ResizeBars {
     private static boolean hasPending = false;
     private static int pendingX, pendingY, pendingW, pendingH;
     private static Zone resizeZone = Zone.NONE;
-    private static int prevMouseState = GLFW.GLFW_RELEASE;
+    private static boolean prevMouseDown = false;
 
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
 
-        long handle = ((WindowAccessor) (Object) window).barless$getHandle();
+        WindowAccessor acc = (WindowAccessor) (Object) window;
+        long handle = acc.barless$getHandle();
 
-        if (window.isFullscreen() || mc.mouseHandler.isMouseGrabbed()) {
-            cancelResize(handle);
+        if (acc.barless$isFullscreen() || mc.mouseHandler.isMouseGrabbed()) {
+            cancelResize();
             return;
         }
 
         int winW = window.getScreenWidth();
         int winH = window.getScreenHeight();
 
-        double[] mx = new double[1];
-        double[] my = new double[1];
-        GLFW.glfwGetCursorPos(handle, mx, my);
+        double[] c = Sdl.cursorPos();
 
-        updateHover(handle, winW, winH, mx[0], my[0]);
-        updateCursor(handle);
-        calculateResize(handle, winW, winH, mx[0], my[0]);
+        updateHover(winW, winH, c[0], c[1]);
+        updateCursor(window);
+        calculateResize(handle, winW, winH, c[0], c[1]);
     }
 
-    private static void cancelResize(long handle) {
+    private static void cancelResize() {
         if (resizing) {
             WindowDragLock.release(WindowDragLock.Owner.RESIZE);
         }
@@ -73,10 +66,10 @@ public class ResizeBars {
         resizeZone = Zone.NONE;
         hovered = Zone.NONE;
         hasPending = false;
-        prevMouseState = GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT);
+        prevMouseDown = Sdl.leftMouseDown();
     }
 
-    private static void updateHover(long handle, int w, int h, double mx, double my) {
+    private static void updateHover(int w, int h, double mx, double my) {
         boolean left = mx <= EDGE;
         boolean right = mx >= w - EDGE;
         boolean top = my <= EDGE;
@@ -95,17 +88,17 @@ public class ResizeBars {
         else if (bottom) hovered = Zone.BOTTOM;
     }
 
-    private static void updateCursor(long handle) {
+    private static void updateCursor(Window window) {
         if (resizing) return;
         if (WindowDragLock.isHeldBy(WindowDragLock.Owner.MOVE)) return;
 
-        switch (hovered) {
-            case LEFT, RIGHT -> GLFW.glfwSetCursor(handle, cursorH);
-            case TOP, BOTTOM -> GLFW.glfwSetCursor(handle, cursorV);
-            case TOP_LEFT, BOTTOM_RIGHT -> GLFW.glfwSetCursor(handle, cursorNWSE);
-            case TOP_RIGHT, BOTTOM_LEFT -> GLFW.glfwSetCursor(handle, cursorNESW);
-            default -> GLFW.glfwSetCursor(handle, cursorArrow);
-        }
+        window.selectCursor(switch (hovered) {
+            case LEFT, RIGHT -> CursorTypes.RESIZE_EW;
+            case TOP, BOTTOM -> CursorTypes.RESIZE_NS;
+            case TOP_LEFT, BOTTOM_RIGHT -> CURSOR_NWSE;
+            case TOP_RIGHT, BOTTOM_LEFT -> CURSOR_NESW;
+            default -> CursorTypes.ARROW;
+        });
     }
 
     public static void applyPendingResize() {
@@ -117,38 +110,36 @@ public class ResizeBars {
         WindowAccessor acc = (WindowAccessor) (Object) window;
         long handle = ((WindowAccessor) (Object) window).barless$getHandle();
 
-        GLFW.glfwSetWindowPos(handle, pendingX, pendingY);
-        GLFW.glfwSetWindowSize(handle, pendingW, pendingH);
+        SDLVideo.SDL_SetWindowPosition(handle, pendingX, pendingY);
+        SDLVideo.SDL_SetWindowSize(handle, pendingW, pendingH);
 
-        int[] fbW = new int[1], fbH = new int[1];
-        GLFW.glfwGetFramebufferSize(handle, fbW, fbH);
+        int[] fb = Sdl.framebufferSize(handle);
 
         acc.barless$setWidth(pendingW);
         acc.barless$setHeight(pendingH);
-        acc.barless$setFramebufferWidth(fbW[0]);
-        acc.barless$setFramebufferHeight(fbH[0]);
+        acc.barless$setFramebufferWidth(fb[0]);
+        acc.barless$setFramebufferHeight(fb[1]);
         acc.barless$setIsResized(true);
 
         mc.resizeGui();
     }
 
     private static void calculateResize(long handle, int winW, int winH, double mx, double my) {
-        int state = GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT);
+        boolean down = Sdl.leftMouseDown();
 
-        if (state == GLFW.GLFW_PRESS) {
-            int[] wx = new int[1], wy = new int[1];
-            GLFW.glfwGetWindowPos(handle, wx, wy);
-            double screenMX = wx[0] + mx;
-            double screenMY = wy[0] + my;
+        if (down) {
+            int[] w = Sdl.windowPos(handle);
+            double screenMX = w[0] + mx;
+            double screenMY = w[1] + my;
 
-            if (!resizing && hovered != Zone.NONE && prevMouseState == GLFW.GLFW_RELEASE) {
+            if (!resizing && hovered != Zone.NONE && !prevMouseDown) {
                 if (WindowDragLock.tryAcquire(WindowDragLock.Owner.RESIZE)) {
                     resizing = true;
                     resizeZone = hovered;
                     startMouseX = screenMX;
                     startMouseY = screenMY;
-                    startWinX = wx[0];
-                    startWinY = wy[0];
+                    startWinX = w[0];
+                    startWinY = w[1];
                     startWinW = winW;
                     startWinH = winH;
                 }
@@ -219,6 +210,6 @@ public class ResizeBars {
             resizing = false;
         }
 
-        prevMouseState = state;
+        prevMouseDown = down;
     }
 }

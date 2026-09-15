@@ -6,7 +6,7 @@ import com.bouncingelf10.barless.mixin.accessor.WindowAccessor;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLVideo;
 
 public class MoveWindowBar {
     private static final int BUTTON_PADDING_SIDE = 6;
@@ -30,15 +30,14 @@ public class MoveWindowBar {
     private static double dragStartMouseX;
     private static double dragStartMouseY;
 
-    private static int prevMouseState = GLFW.GLFW_RELEASE;
-
     public static void renderAndHandle(GuiGraphicsExtractor graphics) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
 
-        if (window.isFullscreen()) return;
+        WindowAccessor acc = (WindowAccessor) (Object) window;
+        if (acc.barless$isFullscreen()) return;
 
-        long handle = ((WindowAccessor) (Object) window).barless$getHandle();
+        long handle = acc.barless$getHandle();
         int screenW = window.getGuiScaledWidth();
         double guiScale = window.getGuiScale();
 
@@ -50,12 +49,9 @@ public class MoveWindowBar {
     }
 
     private static void updateSlide(long handle, double guiScale) {
-        double[] cx = new double[1];
-        double[] cy = new double[1];
+        double[] c = Sdl.cursorPos();
 
-        GLFW.glfwGetCursorPos(handle, cx, cy);
-
-        int guiY = (int) (cy[0] / guiScale);
+        int guiY = (int) (c[1] / guiScale);
         boolean nearTop = guiY <= SLIDE_TRIGGER_Y;
 
         long now = System.currentTimeMillis();
@@ -66,13 +62,10 @@ public class MoveWindowBar {
     }
 
     private static void updateHover(long handle, int screenW, double guiScale) {
-        double[] cx = new double[1];
-        double[] cy = new double[1];
+        double[] c = Sdl.cursorPos();
 
-        GLFW.glfwGetCursorPos(handle, cx, cy);
-
-        int guiX = (int) (cx[0] / guiScale);
-        int guiY = (int) (cy[0] / guiScale);
+        int guiX = (int) (c[0] / guiScale);
+        int guiY = (int) (c[1] / guiScale);
 
         int startX;
         int endX;
@@ -94,25 +87,20 @@ public class MoveWindowBar {
     }
 
     private static void handleMouse(long handle, double guiScale, int screenW) {
-        int state = GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT);
+        boolean pressed = Sdl.leftMouseDown();
 
-        double[] cx = new double[1];
-        double[] cy = new double[1];
-        GLFW.glfwGetCursorPos(handle, cx, cy);
+        double[] c = Sdl.cursorPos();
+        double mx = c[0];
+        double my = c[1];
 
-        double mx = cx[0];
-        double my = cy[0];
-
-        int[] winX = new int[1];
-        int[] winY = new int[1];
-        GLFW.glfwGetWindowPos(handle, winX, winY);
+        int[] win = Sdl.windowPos(handle);
 
         int guiY = (int) (my / guiScale);
 
         int barTop = BUTTON_PADDING_TOP + (int) getSlideOffset();
         int barBottom = barTop + BAR_HEIGHT + 6;
 
-        if (state == GLFW.GLFW_PRESS) {
+        if (pressed) {
             if (!dragging && hovered && guiY >= barTop && guiY <= barBottom) {
                 if (WindowDragLock.tryAcquire(WindowDragLock.Owner.MOVE)) {
                     dragging = true;
@@ -121,7 +109,7 @@ public class MoveWindowBar {
                 }
             }
             if (dragging && WindowDragLock.isHeldBy(WindowDragLock.Owner.MOVE)) {
-                GLFW.glfwSetWindowPos(handle, (int) (winX[0] + (mx - dragStartMouseX)), (int) (winY[0] + (my - dragStartMouseY)));
+                SDLVideo.SDL_SetWindowPosition(handle, (int) (win[0] + (mx - dragStartMouseX)), (int) (win[1] + (my - dragStartMouseY)));
             }
         } else {
             if (dragging) {
@@ -129,8 +117,6 @@ public class MoveWindowBar {
             }
             dragging = false;
         }
-
-        prevMouseState = state;
     }
 
     private static void render(GuiGraphicsExtractor graphics, int screenW) {

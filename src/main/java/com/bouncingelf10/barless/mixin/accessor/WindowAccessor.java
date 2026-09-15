@@ -27,4 +27,10 @@ public interface WindowAccessor {
 
     @Accessor("dirty")
     void barless$setIsResized(boolean v);
+
+    @Accessor("fullscreen")
+    boolean barless$isFullscreen();
+
+    @Invoker("requestClose")
+    void barless$requestClose();
 }

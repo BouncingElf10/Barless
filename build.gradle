@@ -36,14 +36,14 @@ dependencies {
 
 publishMods {
 	file = jar.archiveFile
-	changelog = "Fixed issue where you could still resize while playing in game."
+	changelog = "Updated to 26.3 (glfw -> sdl3)"
 	type = STABLE
 	modLoaders.add("fabric")
 
 	curseforge {
 		projectId = "1576204"
 		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-		minecraftVersions.add("26.2")
+		minecraftVersions.add("26.3")
 		client = true
 		server = true
 		requires("timelesslib")
@@ -51,7 +51,7 @@ publishMods {
 	modrinth {
 		projectId = "bXiW90yr"
 		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-		minecraftVersions.add("26.2")
+		minecraftVersions.add("26.3")
 		requires("timelesslib")
 	}
 }
